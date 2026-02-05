@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution 26 - Educational Adventure Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="main-menu">
+        <div class="menu-icon animate-float">🔬</div>
+        <h1 class="menu-title">Solution 26</h1>
+        <p class="menu-subtitle">An Educational Adventure</p>
+        
+        <button class="pixel-button start-button" onclick="startGame()">START GAME</button>
+        
+        <div class="menu-features">
+            <div class="feature-item">
+                <span class="feature-icon">🧪</span>
+                <span>4 Categories</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">📦</span>
+                <span>Collect Items</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">⬆️</span>
+                <span>Level Up</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🏆</span>
+                <span>Earn Rewards</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="naming-screen" class="hidden">
+        <div class="menu-icon animate-float">🧙‍♂️</div>
+        <h1 class="menu-title">CHARACTER CREATION</h1>
+        <p class="menu-subtitle">Enter your name :</p>
+        
+        <div style="margin: 20px 0;">
+            <input type="text" id="player-name-input" placeholder="NAME..." maxlength="12" style="text-transform: uppercase;">
+            <p id="name-error" style="color: #ff4d4d; font-size: 10px; margin-top: 10px; min-height: 12px;"></p>
+        </div>
+
+        <button id="proceed-button" class="pixel-button" onclick="showConfirmation()" disabled>PROCEED</button>
+    </div>
+
+    <div id="confirmation-screen" class="hidden">
+        <div class="menu-icon">✨</div>
+        <h1 class="menu-title">READY?</h1>
+        <p class="menu-subtitle" id="confirmation-text">Are you ready for your adventure?</p>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <button class="pixel-button start-button" onclick="finalizeStart()">LET'S GO!</button>
+            <button class="small-button" onclick="backToNaming()" style="background: none; border: none; color: #888; text-decoration: underline; cursor: pointer;">Wait, let me change my name</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="top-bar">
+            <h1 class="game-title">SCIENCE QUEST</h1>
+            <div class="top-buttons">
+                <button class="small-button pixel-border" onclick="toggleInventory()">
+                    📦 Items (<span id="inventory-count">0</span>)
+                </button>
+                <button class="small-button pixel-border" onclick="goToMenu()">🏠 Menu</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div>
+                <div class="player-hud game-panel">
+                    <div class="player-header">
+                        <span class="player-avatar">🧙</span>
+                        <div class="player-info">
+                            <h2 id="display-player-name">Explorer</h2>
+                            <span class="player-level">Level <span id="player-level">1</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span>❤️ HP</span>
+                                <span><span id="hp-current">100</span>/<span id="hp-max">100</span></span>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill health" id="hp-bar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span>💎 Mana</span>
+                                <span><span id="mana-current">50</span>/<span id="mana-max">50</span></span>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill mana" id="mana-bar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar-container">
+                            <div class="stat-label">
+                                <span>⭐ XP</span>
+                                <span><span id="xp-current">0</span>/<span id="xp-max">100</span></span>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill xp" id="xp-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gold-display pixel-border">
+                        <span class="gold-icon">🪙</span>
+                        <span class="gold-amount" id="gold-amount">0</span>
+                        <span style="font-size: 8px; color: var(--muted-foreground)">Gold</span>
+                    </div>
+                </div>
+
+                <div class="inventory-panel game-panel hidden" id="inventory-panel">
+                    <h3 class="inventory-title">📦 Inventory</h3>
+                    <div class="inventory-grid" id="inventory-grid"></div>
+                </div>
+            </div>
+
+            <div id="game-area">
+                <div class="category-selector game-panel" id="category-selector">
+                    <div class="category-header">
+                        <h2>Choose Your Challenge</h2>
+                        <p>Select a science category to test your knowledge</p>
+                    </div>
+                    
+                    <div class="category-grid">
+                        <div class="category-card game-panel" onclick="selectCategory('physics')">
+                            <div class="category-icon">⚡</div>
+                            <div class="category-name">Physics</div>
+                            <div class="category-desc">Forces, energy & motion</div>
+                        </div>
+                        <div class="category-card game-panel" onclick="selectCategory('chemistry')">
+                            <div class="category-icon">🧪</div>
+                            <div class="category-name">Chemistry</div>
+                            <div class="category-desc">Elements & reactions</div>
+                        </div>
+                        <div class="category-card game-panel" onclick="selectCategory('biology')">
+                            <div class="category-icon">🧬</div>
+                            <div class="category-name">Biology</div>
+                            <div class="category-desc">Life & organisms</div>
+                        </div>
+                        <div class="category-card game-panel" onclick="selectCategory('astronomy')">
+                            <div class="category-icon">🌌</div>
+                            <div class="category-name">Astronomy</div>
+                            <div class="category-desc">Space & universe</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-card game-panel hidden" id="question-card">
+                    <div class="question-header">
+                        <span class="question-category pixel-border" id="q-category">Physics</span>
+                        <span class="question-difficulty" id="q-difficulty">Easy</span>
+                    </div>
+                    <p class="question-text" id="q-text">Question goes here?</p>
+                    <div class="options-grid" id="options-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameover-screen" class="hidden">
+        <div class="gameover-icon">💀</div>
+        <h1 class="gameover-title">GAME OVER</h1>
+        <p class="gameover-subtitle">Your scientific journey has ended...</p>
+        
+        <div class="stats-grid">
+            <div class="stat-card game-panel">
+                <div class="stat-value" id="final-level">1</div>
+                <div class="stat-name">Final Level</div>
+            </div>
+            <div class="stat-card game-panel">
+                <div class="stat-value" id="final-gold">0</div>
+                <div class="stat-name">Gold Earned</div>
+            </div>
+            <div class="stat-card game-panel">
+                <div class="stat-value" id="correct-answers">0</div>
+                <div class="stat-name">Correct Answers</div>
+            </div>
+            <div class="stat-card game-panel">
+                <div class="stat-value" id="items-collected">0</div>
+                <div class="stat-name">Items Found</div>
+            </div>
+        </div>
+
+        <button class="pixel-button" onclick="goToMenu()">MAIN MENU</button>
+    </div>
+
+    <div class="modal-overlay hidden" id="feedback-modal">
+        <div class="modal-content game-panel">
+            <div class="modal-icon" id="modal-icon">✅</div>
+            <h2 class="modal-title" id="modal-title">Correct!</h2>
+            <p class="modal-message" id="modal-message">Great job!</p>
+            <div class="modal-item hidden" id="modal-item">
+                <span class="item-icon" id="item-icon">🧪</span>
+                <span id="item-name">Item Name</span>
+            </div>
+            <button class="pixel-button" onclick="closeFeedback()">Continue</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
